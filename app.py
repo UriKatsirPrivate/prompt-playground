@@ -12,7 +12,7 @@ from placeholders import *
 
 # https://docs.streamlit.io/library/api-reference/utilities/st.set_page_config
 st.set_page_config(
-    page_title="Prompt Playground",
+    page_title="The Prompt Playground",
     page_icon="icons/vertexai.png",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -25,14 +25,14 @@ st.set_page_config(
 
 PROJECT_ID="landing-zone-demo-341118"
 LANGSMITH_KEY_NAME="langchain-api-key"
-REGIONS=["us-central1","us-west4","us-west1","us-east4","northamerica-northeast1","europe-west1","europe-west2","europe-west3","europe-west4","europe-west9"]
-MODEL_NAMES=['text-bison','text-bison-32k','code-bison','code-bison-32k']
+REGIONS=["europe-west4","us-central1","us-west4","us-west1","us-east4","northamerica-northeast1","europe-west1","europe-west2","europe-west3","europe-west9"]
+MODEL_NAMES=['text-bison-32k','text-bison','code-bison','code-bison-32k']
 
 st.sidebar.write("Project ID: ",f"{PROJECT_ID}") 
 project_id=PROJECT_ID
 region=st.sidebar.selectbox("Please enter the region",REGIONS)
 model_name = st.sidebar.selectbox('Enter model name',MODEL_NAMES)
-max_tokens = st.sidebar.slider('Enter max token output',min_value=1,max_value=8192,step=100,value=1024)
+max_tokens = st.sidebar.slider('Enter max token output',min_value=1,max_value=8192,step=100,value=8192)
 temperature = st.sidebar.slider('Enter temperature',min_value=0.0,max_value=1.0,step=0.1,value=0.1)
 top_p = st.sidebar.slider('Enter top_p',min_value=0.0,max_value=1.0,step=0.1,value=0.8)
 top_k = st.sidebar.slider('Enter top_k',min_value=1,max_value=40,step=1,value=40)
