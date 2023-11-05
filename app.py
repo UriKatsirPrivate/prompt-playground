@@ -64,10 +64,11 @@ css = '''
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
-tab1, tab2, tab3, tab4= st.tabs(["Improve Prompt / "
+tab1, tab2, tab3, tab4, tab5= st.tabs(["Improve Prompt / "
                                              , "Inspect Prompt / "
                                              ,"Run Prompt / "
-                                             ,"Zero to Few"
+                                             ,"Zero to Few / "
+                                             ,"Chain of Thought"
                                              ])
 
 llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p,top_k)
@@ -194,7 +195,8 @@ with tab4:
     with st.form(key='prompt_magic'):
         # Under the form, take all the user inputs
         desc="Enter zero-shot prompt. For better results use text-bison-32k model with a high temperature."
-        zero_shot_prompt = st.text_area(desc,height=200,)
+        link="https://www.promptingguide.ai/techniques/fewshot"
+        zero_shot_prompt = st.text_area(desc,height=200,help=link,placeholder=ZERO_SHOT_PROMPT_PLACEHOLDER)
         submit_button = st.form_submit_button(label='Submit Prompt')
         # If form is submitted by st.form_submit_button run the logic
         if submit_button:
@@ -208,3 +210,39 @@ with tab4:
                 st.text(few_shot_prompt)
             else:
                 st.text("Please enter a zero-shot prompt")
+with tab5:
+    def cotPromptConverter(prompt):
+
+        chat = llm
+        system_template = """You are an assistant designed to convert a prompt into a chain of thought prompt."""
+        system_message_prompt = SystemMessagePromptTemplate.from_template(
+            system_template)
+        human_template = """The prompt is: '{prompt}'. Please convert it into a chain of thought prompt."""
+        human_message_prompt = HumanMessagePromptTemplate.from_template(
+            human_template)
+        chat_prompt = ChatPromptTemplate.from_messages(
+            [system_message_prompt, human_message_prompt]
+        )
+
+        chain = LLMChain(llm=chat, prompt=chat_prompt)
+        result = chain.run(prompt=prompt)
+        return result  # returns string
+
+    with st.form(key='cot_prompt'):
+        # Under the form, take all the user inputs
+        link="https://www.promptingguide.ai/techniques/cot"
+        desc="Enter prompt."
+        prompt = st.text_area(desc,height=200,help=link,placeholder=COT_PROMPT_PLACEHOLDER)
+        submit_button = st.form_submit_button(label='Submit Prompt')
+        # If form is submitted by st.form_submit_button run the logic
+        if submit_button:
+            if prompt:
+                with st.spinner('Working on it...'):
+                    cot_prompt = cotPromptConverter(prompt)
+            else:
+                cot_prompt = ""
+            # Display the few-shot prompt to the user
+            if prompt is not None and len(str(cot_prompt)) > 0:
+                st.text(cot_prompt)
+            else:
+                st.text("Please enter a prompt")                
