@@ -3,7 +3,7 @@ export GOOGLE_CLOUD_PROJECT=landing-zone-demo-341118
 gcloud config set project $GOOGLE_CLOUD_PROJECT
 export SERVICE_NAME=prompt-playground
 export ARTIFACT_REGISTRY_NAME=prompt-playground
-export REGION=europe-west4
+export REGION=me-west1
 export SERVICE_ACCOUNT_EMAIL=experts-hub-demo@landing-zone-demo-341118.iam.gserviceaccount.com
 
 # Artifact Registry
@@ -14,7 +14,7 @@ gcloud run deploy $SERVICE_NAME \
 --platform managed \
 --allow-unauthenticated \
 --region=$REGION \
---ingress=internal-and-cloud-load-balancing \
+--ingress=all \
 --min-instances=0 \
 --concurrency=20 \
 --service-account=$SERVICE_ACCOUNT_EMAIL \
