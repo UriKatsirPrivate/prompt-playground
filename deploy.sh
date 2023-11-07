@@ -14,7 +14,7 @@ gcloud run deploy $SERVICE_NAME \
 --platform managed \
 --allow-unauthenticated \
 --region=$REGION \
---ingress=all \
+--ingress=internal-and-cloud-load-balancing \
 --min-instances=0 \
 --concurrency=20 \
 --service-account=$SERVICE_ACCOUNT_EMAIL \
