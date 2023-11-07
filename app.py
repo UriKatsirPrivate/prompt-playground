@@ -6,9 +6,10 @@ from langchain.prompts.chat import (ChatPromptTemplate,
                                     SystemMessagePromptTemplate)
 from initialization import initialize_llm, initialize_tracing
 import vertexai
-# from vertexai.preview.vision_models import Image, ImageGenerationModel
+from vertexai.preview.vision_models import Image, ImageGenerationModel
 from prompts import PROMPT_IMPROVER_PROMPT
 from placeholders import *
+from system_prompts import *
 
 # https://docs.streamlit.io/library/api-reference/utilities/st.set_page_config
 st.set_page_config(
@@ -41,7 +42,7 @@ if not ('32k' in model_name) and max_tokens>1024:
   st.error(f'{max_tokens} output tokens is not a valid value for model {model_name}')
 
 # Initialize tracing variables
-tracing = st.sidebar.toggle('Enable Langsmith Tracing')
+tracing = st.sidebar.toggle('Enable Langsmith Tracing',disabled=True)
 langsmith_endpoint = st.sidebar.text_input(label="Langsmith Endpoint", value="https://api.smith.langchain.com", disabled=not tracing)
 langsmith_project = st.sidebar.text_input(label="Langsmith Project", value="Prompt Playground", disabled=not tracing)
 
@@ -64,11 +65,12 @@ css = '''
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
-tab1, tab2, tab3, tab4, tab5= st.tabs(["Improve Prompt / "
+tab1, tab2, tab3, tab4, tab5, tab6= st.tabs(["Fine-Tune Prompt / "
                                              , "Inspect Prompt / "
                                              ,"Run Prompt / "
                                              ,"Zero to Few / "
-                                             ,"Chain of Thought"
+                                             ,"Chain of Thought / "
+                                             ,"Images"
                                              ])
 
 llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p,top_k)
@@ -81,13 +83,13 @@ with tab1:
     prompt_improver_chain = LLMChain(llm=llm, prompt=PROMPT_IMPROVER_PROMPT)
 
     # Run LLMChain
-    # if st.button('Generate Improved Prompt',disabled=not (project_id) or not (initial_prompt)):
-    if st.button('Generate Improved Prompt',disabled=not (project_id)):
+    
+    if st.button('Fine-Tune Prompt',disabled=not (project_id)):
         if initial_prompt:
-            with st.spinner("Generating Improved Prompt..."):
+            with st.spinner("Generating Prompt..."):
                 improved_prompt = prompt_improver_chain.run(initial_prompt)
                 st.markdown("""
-                                ### Improved Prompt:
+                                ### Fine-Tuned Prompt:
                                 """)
                 st.code(improved_prompt)
         else:
@@ -245,4 +247,70 @@ with tab5:
             if prompt is not None and len(str(cot_prompt)) > 0:
                 st.text(cot_prompt)
             else:
-                st.text("Please enter a prompt")                
+                st.text("Please enter a prompt")    
+with tab6:
+    def GenerateImagePrompt(description,number):
+        
+        system_template = GenerateImageSystemPrompt
+        system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+        human_template = f"""Please generate {number} prompt(s) about: {description} ."""
+        human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+        chat_prompt = ChatPromptTemplate.from_messages(
+            [system_message_prompt, human_message_prompt]
+        )
+
+        chain = LLMChain(llm=llm, prompt=chat_prompt)
+        result = chain.run(module_string=description)
+        # print (f" result is: {result}")
+        return result # returns string
+    
+    def GenerateImage(description,num_of_images):
+        try:
+            vertexai.init(project=project_id, location=region)
+
+            # model = ImageGenerationModel.from_pretrained(model_name)
+            model = ImageGenerationModel.from_pretrained("imagegeneration@002")
+            images = model.generate_images(
+            prompt=description,
+            # Optional:
+            number_of_images=num_of_images,
+            # seed=1,
+            )
+            return images
+        except:
+            ""
+    def display_images(images):
+        for image in images:
+            image.save(location="./gen-img1.png", include_generation_parameters=True)
+            st.image("./gen-img1.png",use_column_width="auto")
+   
+    link="https://cloud.google.com/vertex-ai/docs/generative-ai/image/img-gen-prompt-guide"
+    desc="Write your prompt below, See help icon for a prompt guide: (Images will be generated using the imagegeneration@002 model)"
+    description = st.text_area(desc,height=200,key=55,placeholder=GENERATE_IMAGES,help=link)
+    # num_of_images=st.number_input("How many images to generate",min_value=1,max_value=8,value=4)
+    
+    col1, col2 = st.columns(2,gap="large")
+    with col1:
+        with st.form(key='prompt_magic10',clear_on_submit=False):
+            num_of_prompts=st.number_input("How many prompts to generate",min_value=2,max_value=4,value=2)
+            if st.form_submit_button('Generate Prompt(s)',disabled=not (project_id)):
+                if description:
+                    with st.spinner('Generating Prompt(s)...'):
+                        improved_prompt = GenerateImagePrompt(description,num_of_prompts)
+                    st.markdown(improved_prompt)
+                else:
+                    st.markdown("No prompts generated. Please enter a valid prompt.")        
+    with col2:
+        with st.form(key='prompt_magic1',clear_on_submit=False):                
+        
+            num_of_images=st.number_input("How many images to generate",min_value=1,max_value=8,value=4)
+            if st.form_submit_button('Generate Image(s)',disabled=not (project_id)):
+                if description:
+                    with st.spinner('Generating Image(s)...'):
+                        images = GenerateImage(description,num_of_images)
+                        if images:
+                            display_images(images)
+                        else:
+                           st.markdown("No images generated. Prompt was blocked.")     
+                else:
+                    st.markdown("No images generated. Please enter a valid prompt.")                
