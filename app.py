@@ -7,6 +7,7 @@ from langchain.prompts.chat import (ChatPromptTemplate,
 from initialization import initialize_llm, initialize_tracing
 import vertexai
 from vertexai.preview.vision_models import Image, ImageGenerationModel
+# from langchain import hub
 from prompts import PROMPT_IMPROVER_PROMPT
 from placeholders import *
 from system_prompts import *
@@ -65,12 +66,13 @@ css = '''
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
-tab1, tab2, tab3, tab4, tab5, tab6= st.tabs(["Fine-Tune Prompt / "
+tab1, tab2, tab3, tab4, tab5, tab6,tab7= st.tabs(["Fine-Tune Prompt / "
                                              , "Inspect Prompt / "
                                              ,"Run Prompt / "
                                              ,"Zero to Few / "
                                              ,"Chain of Thought / "
-                                             ,"Images"
+                                             ,"Images / "
+                                             ,"Decomposition"
                                              ])
 
 llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p,top_k)
@@ -313,4 +315,30 @@ with tab6:
                         else:
                            st.markdown("No images generated. Prompt was blocked.")     
                 else:
-                    st.markdown("No images generated. Please enter a valid prompt.")                
+                    st.markdown("No images generated. Please enter a valid prompt.")      
+with tab7:
+    def decomposition(prompt):
+    
+        llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p,top_k)
+
+        system_template = Decomposition
+        system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+        human_template = """Question: '{prompt}'."""
+        human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+        chat_prompt = ChatPromptTemplate.from_messages(
+            [system_message_prompt, human_message_prompt]
+        )
+
+        chain = LLMChain(llm=llm, prompt=chat_prompt)
+        result = chain.run(prompt=prompt)
+        return result # returns string
+
+    link="The general approach is to ask for self-contained questions to decompose the original user's query."                
+    prompt=st.text_area("Enter your prompt:",height=200, placeholder=Decomposition_Prompt,help=link)
+    if st.button('Decomposition',disabled=not (project_id)):
+        if prompt:
+            with st.spinner('decomposing...'):
+                inspection_result = decomposition(prompt)
+            st.text_area('Result', inspection_result, height=250, max_chars=None, key=None)
+        else:
+            st.markdown("Please enter a prompt.")                              

@@ -58,3 +58,17 @@ Futuristic sunglasses, cyberpunk essence, 3D data particles surrounding, 8K bril
 Pull from the above examples and infuse your creativity. Think of how you might visualize literature's most iconic scenes, reimagine historic events, or even translate music into visual art. The possibilities are endless. Dive deep, and let's create together!
 
 do not return the Human: prompt """
+
+Decomposition="""I’m going to ask you a question. I want you to decompose it into a series of subquestions. Each subquestion should be self-contained with all the information necessary to solve it.
+
+Make sure not to decompose more than necessary or have any trivial subquestions - you’ll be evaluated on the simplicity, conciseness, and correctness of your decompositions as well as your final answer. You should wrap each subquestion in <sub q></sub q> tags. After each subquestion, you should answer the subquestion and put your subanswer in <sub a></sub a> tags.
+
+ Once you have all the information you need to answer the question, output <FIN></FIN> tags.
+
+example:
+Question: What is Bitcoin?
+<sub q>What is the purpose of Bitcoin?</sub q>
+<sub a>Bitcoin serves as a decentralized digital currency.</sub a>
+<sub q>What does decentralized mean?</sub q>
+<sub a>Decentralized means it operates without a central authority or single administrator.</sub a>
+<FIN>Bitcoin is a decentralized digital currency that operates without a central authority.</FIN>"""
