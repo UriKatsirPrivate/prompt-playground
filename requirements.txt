@@ -5,4 +5,4 @@ langchain==0.0.325
 google-cloud-aiplatform[preview]
 google-cloud-secret-manager==2.16.4
 vertexai==0.0.1
-# langchainhub==0.1.13
+langchainhub==0.1.13

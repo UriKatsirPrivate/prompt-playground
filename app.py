@@ -7,7 +7,7 @@ from langchain.prompts.chat import (ChatPromptTemplate,
 from initialization import initialize_llm, initialize_tracing
 import vertexai
 from vertexai.preview.vision_models import Image, ImageGenerationModel
-# from langchain import hub
+from langchain import hub
 from prompts import PROMPT_IMPROVER_PROMPT
 from placeholders import *
 from system_prompts import *
@@ -317,22 +317,17 @@ with tab6:
                 else:
                     st.markdown("No images generated. Please enter a valid prompt.")      
 with tab7:
-    def decomposition(prompt):
-    
-        llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p,top_k)
+    def decomposition(query):
+        
+        # llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p,top_k)
+        # https://docs.smith.langchain.com/hub/dev-setup
+        prompt = hub.pull("smithing-gold/question-decomposition")
 
-        system_template = Decomposition
-        system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
-        human_template = """Question: '{prompt}'."""
-        human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-        chat_prompt = ChatPromptTemplate.from_messages(
-            [system_message_prompt, human_message_prompt]
-        )
-
-        chain = LLMChain(llm=llm, prompt=chat_prompt)
-        result = chain.run(prompt=prompt)
+        runnable = prompt | llm
+        result = runnable.invoke({"question": query})
         return result # returns string
-
+        
+    
     link="The general approach is to ask for self-contained questions to decompose the original user's query."                
     prompt=st.text_area("Enter your prompt:",height=200, placeholder=Decomposition_Prompt,help=link)
     if st.button('Decomposition',disabled=not (project_id)):
@@ -341,4 +336,4 @@ with tab7:
                 inspection_result = decomposition(prompt)
             st.text_area('Result', inspection_result, height=250, max_chars=None, key=None)
         else:
-            st.markdown("Please enter a prompt.")                              
+            st.markdown("Please enter a prompt.")
