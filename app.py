@@ -97,36 +97,43 @@ with tab1:
                         "lazy_prompt": query,
                     })
         return result # returns string
+    
+    def make_prompt(query):
+        prompt = hub.pull("hardkothari/prompt-maker")
+        runnable = prompt | llm
+        result = runnable.invoke({
+                        "task": query,
+                        "lazy_prompt": query,
+                    })
+        return result # returns string
 
-    # col1, col2= st.columns(2,gap="medium")
     
     initial_prompt = st.text_area("Enter your prompt:", height=200, placeholder=IMPROVE_PROMPT_PLACEHOLDER)
     
-
     # Initialize LLMChain
     prompt_improver_chain = LLMChain(llm=llm, prompt=PROMPT_IMPROVER_PROMPT)
 
     # Run LLMChain
-    # col1, col2= st.columns(2,gap="medium")
     if st.button('Fine-Tune Prompt',disabled=not (project_id)):
-        # col1, col2= st.columns(2,gap="medium")
+    
         if initial_prompt:
             
             with st.spinner("Generating Prompts..."):
                 col1, col2= st.columns(2,gap="medium")
                 with col1:
                     improved_prompt = prompt_improver_chain.run(initial_prompt)
-                    # st.markdown(""" ### Fine-Tuned Prompt:""")
                     st.text_area(label="Fine-Tuned Prompt:",value=improved_prompt, height=250, max_chars=None, key=None)
 
                     supercharged_prompt=(supercharge_prompt(initial_prompt))
-                    # st.markdown(""" ### Supercharged Prompt:""")
                     st.text_area("Supercharged Prompt:",supercharged_prompt, height=250, max_chars=None, key=None) 
 
                 with col2:
                     refined_prompt=(refine_prompt(initial_prompt))
                     # st.markdown(""" ### Refined Prompt:""")
                     st.text_area("Refined Prompt:",refined_prompt, height=250, max_chars=None, key=None)    
+
+                    made_prompt=(make_prompt(initial_prompt))
+                    st.text_area("Prompt Maker:",made_prompt, height=250, max_chars=None, key=None) 
         else:
             st.error(f"Please provide a prompt")
 with tab2:
