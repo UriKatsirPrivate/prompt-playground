@@ -1,7 +1,7 @@
-google-cloud-aiplatform==1.35.0
+google-cloud-aiplatform==1.36.2
 watchdog==3.0.0
-streamlit==1.28.0
-langchain==0.0.325
+streamlit==1.28.1
+langchain==0.0.329
 google-cloud-aiplatform[preview]
 google-cloud-secret-manager==2.16.4
 vertexai==0.0.1
