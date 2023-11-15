@@ -25,7 +25,7 @@ st.set_page_config(
     }
 )
 
-PROJECT_ID="landing-zone-demo-341118"
+PROJECT_ID=st.sidebar.text_input(label="Project ID",value="Your Project ID")
 LANGSMITH_KEY_NAME="langchain-api-key"
 REGIONS=["europe-west4","us-central1","us-west4","us-west1","us-east4","northamerica-northeast1","europe-west1","europe-west2","europe-west3","europe-west9"]
 MODEL_NAMES=['text-bison-32k','text-bison','code-bison','code-bison-32k']
@@ -48,7 +48,7 @@ langsmith_endpoint = st.sidebar.text_input(label="Langsmith Endpoint", value="ht
 langsmith_project = st.sidebar.text_input(label="Langsmith Project", value="Prompt Playground", disabled=not tracing)
 
 # Check if initialize_tracing() has already been called
-if 'tracing_initialized' not in st.session_state:
+if 'tracing_initialized' not in st.session_state and tracing:
     initialize_tracing(tracing,langsmith_endpoint,langsmith_project,PROJECT_ID,LANGSMITH_KEY_NAME)
     # Set the flag to indicate that initialize_tracing() has been called
     st.session_state.tracing_initialized = True
@@ -114,7 +114,7 @@ with tab1:
     prompt_improver_chain = LLMChain(llm=llm, prompt=PROMPT_IMPROVER_PROMPT)
 
     # Run LLMChain
-    if st.button('Fine-Tune Prompt',disabled=not (project_id)):
+    if st.button('Fine-Tune Prompt',disabled=not (project_id)  or project_id=="Your Project ID"):
     
         if initial_prompt:
             
@@ -173,7 +173,7 @@ with tab2:
             st.markdown("No modifications needed.")
                     
     prompt=st.text_area("Enter your prompt:",height=200, placeholder=INSPECT_PROMPT_PLACEHOLDER)
-    if st.button('Inspect and Modify Prompt',disabled=not (project_id)):
+    if st.button('Inspect and Modify Prompt',disabled=not (project_id)  or project_id=="Your Project ID"):
         if prompt:
             with st.spinner('Inspecting prompt...'):
                 inspection_result = securityInspector(prompt)
@@ -211,7 +211,7 @@ with tab3:
     #Get the prompt from the user
     prompt = st.text_area('Enter your prompt:',height=200, key=3,placeholder=RUN_PROMPT_PLACEHOLDER)
     
-    if st.button('Execute Prompt'):
+    if st.button('Execute Prompt',disabled=not (project_id)  or project_id=="Your Project ID"):
         if prompt:
             with st.spinner('Running prompt...'):
                 execution_result = promptExecutor(prompt)
@@ -241,7 +241,7 @@ with tab4:
         desc="Enter zero-shot prompt. For better results use text-bison-32k model with a high temperature."
         link="https://www.promptingguide.ai/techniques/fewshot"
         zero_shot_prompt = st.text_area(desc,height=200,help=link,placeholder=ZERO_SHOT_PROMPT_PLACEHOLDER)
-        submit_button = st.form_submit_button(label='Submit Prompt')
+        submit_button = st.form_submit_button(label='Submit Prompt',disabled=not (project_id)  or project_id=="Your Project ID")
         # If form is submitted by st.form_submit_button run the logic
         if submit_button:
             if zero_shot_prompt:
@@ -277,7 +277,7 @@ with tab5:
         link="https://www.promptingguide.ai/techniques/cot"
         desc="Enter prompt."
         prompt = st.text_area(desc,height=200,help=link,placeholder=COT_PROMPT_PLACEHOLDER)
-        submit_button = st.form_submit_button(label='Submit Prompt')
+        submit_button = st.form_submit_button(label='Submit Prompt',disabled=not (project_id)  or project_id=="Your Project ID")
         # If form is submitted by st.form_submit_button run the logic
         if submit_button:
             if prompt:
@@ -335,7 +335,7 @@ with tab6:
     with col1:
         with st.form(key='prompt_magic10',clear_on_submit=False):
             num_of_prompts=st.number_input("How many prompts to generate",min_value=2,max_value=4,value=2)
-            if st.form_submit_button('Generate Prompt(s)',disabled=not (project_id)):
+            if st.form_submit_button('Generate Prompt(s)',disabled=not (project_id)  or project_id=="Your Project ID"):
                 if description:
                     with st.spinner('Generating Prompt(s)...'):
                         improved_prompt = GenerateImagePrompt(description,num_of_prompts)
@@ -346,7 +346,7 @@ with tab6:
         with st.form(key='prompt_magic1',clear_on_submit=False):                
         
             num_of_images=st.number_input("How many images to generate",min_value=1,max_value=8,value=4)
-            if st.form_submit_button('Generate Image(s)',disabled=not (project_id)):
+            if st.form_submit_button('Generate Image(s)',disabled=not (project_id)  or project_id=="Your Project ID"):
                 if description:
                     with st.spinner('Generating Image(s)...'):
                         images = GenerateImage(description,num_of_images)
@@ -370,7 +370,7 @@ with tab7:
     
     link="The general approach is to ask for self-contained questions to decompose the original user's query."                
     prompt=st.text_area("Enter your prompt:",height=200, placeholder=Decomposition_Prompt,help=link)
-    if st.button('Decomposition',disabled=not (project_id)):
+    if st.button('Decomposition',disabled=not (project_id)  or project_id=="Your Project ID"):
         if prompt:
             with st.spinner('decomposing...'):
                 inspection_result = decomposition(prompt)
