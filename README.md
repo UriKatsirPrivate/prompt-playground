@@ -10,7 +10,7 @@
     * Modify deploy.sh:
         * Replace SERVICE_ACCOUNT_EMAIL with your own service account. 
             * The service account should have _Cloud Run Invoker_ and _Vertex AI User_ permissions.
-        * Replace ARTIFACT_REGISTRY_NAME with your own. (The registry should already exist.)
+        * Replace ARTIFACT_REGISTRY_NAME with your own. (The repository should already exist.)
         * Replace GOOGLE_CLOUD_PROJECT with your own.
     * Execute deploy.sh to deploy the code to Cloud Run.
 * Once the UI is running, enter your project is in the side bar
