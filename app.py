@@ -11,6 +11,7 @@ from langchain import hub
 from prompts import PROMPT_IMPROVER_PROMPT
 from placeholders import *
 from system_prompts import *
+import requests
 
 # https://docs.streamlit.io/library/api-reference/utilities/st.set_page_config
 st.set_page_config(
@@ -25,11 +26,31 @@ st.set_page_config(
     }
 )
 
-PROJECT_ID=st.sidebar.text_input(label="Project ID",value="Your Project ID")
+# PROJECT_ID=st.sidebar.text_input(label="Project ID",value="Your Project ID")
 LANGSMITH_KEY_NAME="langchain-api-key"
 REGIONS=["europe-west4","us-central1","us-west4","us-west1","us-east4","northamerica-northeast1","europe-west1","europe-west2","europe-west3","europe-west9"]
 MODEL_NAMES=['text-bison-32k','text-bison','code-bison','code-bison-32k']
 
+def get_project_id():
+    metadata_server_url = "http://metadata.google.internal/computeMetadata/v1/"
+    metadata_flavor = {'Metadata-Flavor': 'Google'}
+    try:
+        response = requests.get(metadata_server_url + "project/project-id", headers=metadata_flavor)
+        if response.status_code == 200:
+            project_id = response.text
+            return project_id
+        else:
+            print(f"Failed to retrieve project ID. Status code: {response.status_code}")
+            return None
+    except requests.RequestException as e:
+        print(f"Error: {e}")
+        return None
+
+PROJECT_ID=st.sidebar.text_input(label="Project ID",value="Your Project ID")
+if PROJECT_ID=="" or PROJECT_ID=="Your Project ID":
+    # print("getting project id")
+    PROJECT_ID=get_project_id()
+    
 st.sidebar.write("Project ID: ",f"{PROJECT_ID}") 
 project_id=PROJECT_ID
 region=st.sidebar.selectbox("Please enter the region",REGIONS)
