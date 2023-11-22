@@ -20,8 +20,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
     menu_items={
-        'Get help': 'https://cloud.google.com/vertex-ai?hl=en',
-        # 'About': "# This is a header. This is an *extremely* cool app!"
+        'Get help': 'https://github.com/UriKatsirPrivate/prompt-playground',
         'About': "#### Created by [Uri Katsir](https://www.linkedin.com/in/uri-katsir/)"
     }
 )
