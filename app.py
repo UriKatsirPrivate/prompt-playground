@@ -65,7 +65,7 @@ if not ('32k' in model_name) and max_tokens>1024:
 # Initialize tracing variables
 tracing = st.sidebar.toggle('Enable Langsmith Tracing',disabled=True)
 langsmith_endpoint = st.sidebar.text_input(label="Langsmith Endpoint", value="https://api.smith.langchain.com", disabled=not tracing)
-langsmith_project = st.sidebar.text_input(label="Langsmith Project", value="Prompt Playground", disabled=not tracing)
+langsmith_project = st.sidebar.text_input(label="Langsmith Project", value="prompt-playground", disabled=not tracing)
 
 # Check if initialize_tracing() has already been called
 if 'tracing_initialized' not in st.session_state and tracing:
