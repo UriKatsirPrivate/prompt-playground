@@ -86,13 +86,14 @@ css = '''
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
-tab1, tab2, tab3, tab4, tab5, tab6,tab7= st.tabs(["Fine-Tune Prompt / "
+tab1, tab2, tab3, tab4, tab5, tab6,tab7,tab8= st.tabs(["Fine-Tune Prompt / "
                                              , "Inspect Prompt / "
                                              ,"Run Prompt / "
                                              ,"Zero to Few / "
                                              ,"Chain of Thought / "
                                              ,"Images / "
-                                             ,"Decomposition"
+                                             ,"Decomposition / "
+                                             ,"D.A.R.E Prompting"
                                              ])
 
 llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p,top_k)
@@ -331,7 +332,7 @@ with tab6:
             vertexai.init(project=project_id, location=region)
 
             # model = ImageGenerationModel.from_pretrained(model_name)
-            model = ImageGenerationModel.from_pretrained("imagegeneration@002")
+            model = ImageGenerationModel.from_pretrained("imagegeneration@005")
             images = model.generate_images(
             prompt=description,
             # Optional:
@@ -347,7 +348,7 @@ with tab6:
             st.image("./gen-img1.png",use_column_width="auto")
    
     link="https://cloud.google.com/vertex-ai/docs/generative-ai/image/img-gen-prompt-guide"
-    desc="Write your prompt below, See help icon for a prompt guide: (Images will be generated using the imagegeneration@002 model)"
+    desc="Write your prompt below, See help icon for a prompt guide: (Images will be generated using the imagegeneration@005 model)"
     description = st.text_area(desc,height=200,key=55,placeholder=GENERATE_IMAGES,help=link)
     # num_of_images=st.number_input("How many images to generate",min_value=1,max_value=8,value=4)
     
@@ -397,3 +398,28 @@ with tab7:
             st.text_area('Result', inspection_result, height=250, max_chars=None, key=None)
         else:
             st.markdown("Please enter a prompt.")
+with tab8:
+    def dare_it(query,vision,mission,context):
+        
+        # https://smith.langchain.com/hub/uri-katsir/dare-determine_appropriate_response?organizationId=78e845bf-d7e9-43c7-8c2d-d0decc426c62
+        hub_prompt = hub.pull("uri-katsir/dare-determine_appropriate_response")
+
+        
+        runnable = hub_prompt | llm
+        result = runnable.invoke({"vision": vision,"mission": mission,"context": context,"prompt": query})
+        return result # returns string
+        
+    
+    link="https://www.linkedin.com/posts/ram-seshadri-nyc-nj_how-do-you-reduce-hallucinations-ensure-activity-7085123540177285121-THrK/"
+    vision_help="Enter your vision: See help icon for more information about the DARE prompting technique:"
+    vision=st.text_input(vision_help ,placeholder="Marketing assistant",help=link)
+    mission=st.text_input("Enter your mission:", placeholder="Help people plan marketing events",help="")
+    context=st.text_area("Enter your context:",height=20, placeholder="You are a marketing assistant. Be as elaborate as makes sense",help="")
+    prompt=st.text_area("Enter your prompt:",height=100, placeholder="Plan cloud run marketing workshop",help="")
+    if st.button('D.A.R.E',disabled=not (project_id)  or project_id=="Your Project ID"):
+        if prompt:
+            with st.spinner('working on it...'):
+                dare_result = dare_it(prompt,vision,mission,context)
+            st.text_area('Result', dare_result, height=250, max_chars=None, key=None)
+        else:
+            st.markdown("Please enter a prompt.")            
