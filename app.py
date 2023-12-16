@@ -27,8 +27,8 @@ st.set_page_config(
 
 # PROJECT_ID=st.sidebar.text_input(label="Project ID",value="Your Project ID")
 LANGSMITH_KEY_NAME="langchain-api-key"
-REGIONS=["europe-west4","us-central1","us-west4","us-west1","us-east4","northamerica-northeast1","europe-west1","europe-west2","europe-west3","europe-west9"]
-MODEL_NAMES=['text-bison-32k','text-bison','code-bison','code-bison-32k']
+REGIONS=["us-central1","europe-west4","us-west4","us-west1","us-east4","northamerica-northeast1","europe-west1","europe-west2","europe-west3","europe-west9"]
+MODEL_NAMES=['gemini-pro','text-bison-32k','text-bison','code-bison','code-bison-32k']
 
 def get_project_id():
     metadata_server_url = "http://metadata.google.internal/computeMetadata/v1/"
@@ -59,7 +59,7 @@ temperature = st.sidebar.slider('Enter temperature',min_value=0.0,max_value=1.0,
 top_p = st.sidebar.slider('Enter top_p',min_value=0.0,max_value=1.0,step=0.1,value=0.8)
 top_k = st.sidebar.slider('Enter top_k',min_value=1,max_value=40,step=1,value=40)
 
-if not ('32k' in model_name) and max_tokens>1024:
+if not ('32k' in model_name or 'gemini' in model_name) and max_tokens>1024:
   st.error(f'{max_tokens} output tokens is not a valid value for model {model_name}')
 
 # Initialize tracing variables
@@ -348,7 +348,7 @@ with tab6:
             st.image("./gen-img1.png",use_column_width="auto")
    
     link="https://cloud.google.com/vertex-ai/docs/generative-ai/image/img-gen-prompt-guide"
-    desc="Write your prompt below, See help icon for a prompt guide: (Images will be generated using the imagegeneration@005 model)"
+    desc="Write your prompt below, See help icon for a prompt guide: (Images will be generated using the Imagen 2 model)"
     description = st.text_area(desc,height=200,key=55,placeholder=GENERATE_IMAGES,help=link)
     # num_of_images=st.number_input("How many images to generate",min_value=1,max_value=8,value=4)
     
