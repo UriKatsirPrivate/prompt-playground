@@ -246,7 +246,9 @@ with tab4:
         system_template = """You are an assistant designed to convert a zero-shot prompt into a few-shot prompt."""
         system_message_prompt = SystemMessagePromptTemplate.from_template(
             system_template)
-        human_template = """The zero-shot prompt is: '{zero_shot_prompt}'. Please convert it into a few-shot prompt."""
+        human_template = """The zero-shot prompt is: '{zero_shot_prompt}'. Please convert it into a few-shot prompt.
+                            Be as elaborate as possible. Make sure to include at least 3 examples.
+                            """
         human_message_prompt = HumanMessagePromptTemplate.from_template(
             human_template)
         chat_prompt = ChatPromptTemplate.from_messages(
@@ -280,9 +282,13 @@ with tab5:
 
         chat = llm
         system_template = """You are an assistant designed to convert a prompt into a chain of thought prompt."""
+                            
+                      
         system_message_prompt = SystemMessagePromptTemplate.from_template(
             system_template)
-        human_template = """The prompt is: '{prompt}'. Please convert it into a chain of thought prompt."""
+        human_template = """The prompt is: '{prompt}'. Please convert it into a chain of thought prompt.
+        Always append 'Let's think step by step.' to the prompt.
+        """
         human_message_prompt = HumanMessagePromptTemplate.from_template(
             human_template)
         chat_prompt = ChatPromptTemplate.from_messages(
