@@ -86,7 +86,8 @@ css = '''
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
-tab1, tab2, tab3, tab4, tab5, tab6,tab7,tab8= st.tabs(["Fine-Tune Prompt / "
+tab1, tab2, tab3, tab4, tab5, tab6,tab7,tab8,tab9= st.tabs(["Fine-Tune Prompt / "
+                                             , "Analysis & Enhancement /"          
                                              , "Inspect Prompt / "
                                              ,"Run Prompt / "
                                              ,"Zero to Few / "
@@ -158,6 +159,41 @@ with tab1:
         else:
             st.error(f"Please provide a prompt")
 with tab2:
+    def analysis_and_enhancement(prompt):
+    
+        hub_prompt = hub.pull("collinsomniac/ultimate_nlp_taskprompt-inspired_by_hardkothari")
+
+        task="improve the prompt"
+        lazy_prompt= prompt
+
+        runnable = hub_prompt | llm
+        result = runnable.invoke({
+                        "task": task,
+                        "lazy_prompt": lazy_prompt,
+                    })
+        
+        return result # returns string   
+
+    def display_result(execution_result):
+        if execution_result != "":
+            st.text_area(label="Execution Result:",value=execution_result,height=400, key=50)
+            # st.markdown(f"**Execution Result:** {execution_result}")
+            # st.code(execution_result)
+
+        else:
+            st.warning('No result to display.')
+
+    #Get the prompt from the user
+    prompt = st.text_area('Enter your prompt:',height=200, key=33,placeholder="tweet about Israel")
+    
+    if st.button('Analysis & Enhancement',disabled=not (project_id)  or project_id=="Your Project ID"):
+        if prompt:
+            with st.spinner('Running prompt...'):
+                execution_result = analysis_and_enhancement(prompt)
+            display_result(execution_result)
+        else:
+            st.warning('Please enter a prompt before executing.')
+with tab3:
     def securityInspector(prompt):
     
         llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p,top_k)
@@ -207,7 +243,7 @@ with tab2:
                 displaySafePrompt(safe_prompt)
         else:
             st.markdown("Please enter a prompt.")
-with tab3:
+with tab4:
     def promptExecutor(prompt):
     
         system_template = """You are an AI assistant designed to execute the given prompt: '{prompt}'."""
@@ -239,7 +275,7 @@ with tab3:
             display_result(execution_result)
         else:
             st.warning('Please enter a prompt before executing.')
-with tab4:
+with tab5:
     def fewShotPromptConverter(zero_shot_prompt):
 
         chat = llm
@@ -261,7 +297,7 @@ with tab4:
 
     with st.form(key='prompt_magic'):
         # Under the form, take all the user inputs
-        desc="Enter zero-shot prompt. For better results use text-bison-32k model with a high temperature."
+        desc="Enter zero-shot prompt:"
         link="https://www.promptingguide.ai/techniques/fewshot"
         zero_shot_prompt = st.text_area(desc,height=200,help=link,placeholder=ZERO_SHOT_PROMPT_PLACEHOLDER)
         submit_button = st.form_submit_button(label='Submit Prompt',disabled=not (project_id)  or project_id=="Your Project ID")
@@ -277,7 +313,7 @@ with tab4:
                 st.text(few_shot_prompt)
             else:
                 st.text("Please enter a zero-shot prompt")
-with tab5:
+with tab6:
     def cotPromptConverter(prompt):
 
         chat = llm
@@ -302,7 +338,7 @@ with tab5:
     with st.form(key='cot_prompt'):
         # Under the form, take all the user inputs
         link="https://www.promptingguide.ai/techniques/cot"
-        desc="Enter prompt."
+        desc="Enter prompt:"
         prompt = st.text_area(desc,height=200,help=link,placeholder=COT_PROMPT_PLACEHOLDER)
         submit_button = st.form_submit_button(label='Submit Prompt',disabled=not (project_id)  or project_id=="Your Project ID")
         # If form is submitted by st.form_submit_button run the logic
@@ -317,7 +353,7 @@ with tab5:
                 st.text(cot_prompt)
             else:
                 st.text("Please enter a prompt")    
-with tab6:
+with tab7:
     def GenerateImagePrompt(description,number):
         
         system_template = GenerateImageSystemPrompt
@@ -383,7 +419,7 @@ with tab6:
                            st.markdown("No images generated. Prompt was blocked.")     
                 else:
                     st.markdown("No images generated. Please enter a valid prompt.")      
-with tab7:
+with tab8:
     def decomposition(query):
         
         # llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p,top_k)
@@ -404,7 +440,7 @@ with tab7:
             st.text_area('Result', inspection_result, height=250, max_chars=None, key=None)
         else:
             st.markdown("Please enter a prompt.")
-with tab8:
+with tab9:
     def dare_it(query,vision,mission,context):
         
         # https://smith.langchain.com/hub/uri-katsir/dare-determine_appropriate_response?organizationId=78e845bf-d7e9-43c7-8c2d-d0decc426c62
