@@ -11,3 +11,4 @@ Chinook.db
 .vscode/
 .DS_Store
 .git*
+*pycache*
