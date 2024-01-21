@@ -6,6 +6,7 @@ from langchain.prompts.chat import (ChatPromptTemplate,
                                     SystemMessagePromptTemplate)
 from initialization import initialize_llm, initialize_tracing
 import vertexai
+
 from vertexai.preview.vision_models import Image, ImageGenerationModel
 from langchain import hub
 from prompts import PROMPT_IMPROVER_PROMPT
@@ -143,7 +144,7 @@ with tab1:
             with st.spinner("Generating Prompts..."):
                 col1, col2= st.columns(2,gap="medium")
                 with col1:
-                    improved_prompt = prompt_improver_chain.run(initial_prompt)
+                    improved_prompt = prompt_improver_chain.invoke(initial_prompt)
                     st.text_area(label="Fine-Tuned Prompt:",value=improved_prompt, height=250, max_chars=None, key=None)
 
                     supercharged_prompt=(supercharge_prompt(initial_prompt))
@@ -188,7 +189,7 @@ with tab2:
     
     if st.button('Analysis & Enhancement',disabled=not (project_id)  or project_id=="Your Project ID"):
         if prompt:
-            with st.spinner('Running prompt...'):
+            with st.spinner('Analyzing prompt...'):
                 execution_result = analysis_and_enhancement(prompt)
             display_result(execution_result)
         else:
@@ -206,8 +207,10 @@ with tab3:
             [system_message_prompt, human_message_prompt]
         )
 
-        chain = LLMChain(llm=llm, prompt=chat_prompt)
-        result = chain.run(prompt=prompt)
+        # chain = LLMChain(llm=llm, prompt=chat_prompt)
+        chain = chat_prompt | llm
+        result = chain.invoke({"prompt":prompt})
+        # result = chain.run(prompt=prompt)
         return result # returns string
     
     def safePromptSuggester(inspection_result):
@@ -220,8 +223,10 @@ with tab3:
             [system_message_prompt, human_message_prompt]
         )
 
-        chain = LLMChain(llm=llm, prompt=chat_prompt)
-        result = chain.run(inspection_result=inspection_result)
+        # chain = LLMChain(llm=llm, prompt=chat_prompt)
+        chain = chat_prompt | llm
+        # result = chain.run(inspection_result=inspection_result)
+        result = chain.invoke({"inspection_result":inspection_result})
         return result # returns string
     def displaySafePrompt(safe_prompt):
         if safe_prompt:
@@ -254,8 +259,9 @@ with tab4:
             [system_message_prompt, human_message_prompt]
         )
 
-        chain = LLMChain(llm=llm, prompt=chat_prompt)
-        result = chain.run(prompt=prompt)
+        # chain = LLMChain(llm=llm, prompt=chat_prompt)
+        chain = chat_prompt | llm
+        result = chain.invoke({"prompt":prompt})
         return result # returns string   
 
     def display_result(execution_result):
@@ -291,8 +297,9 @@ with tab5:
             [system_message_prompt, human_message_prompt]
         )
 
-        chain = LLMChain(llm=chat, prompt=chat_prompt)
-        result = chain.run(zero_shot_prompt=zero_shot_prompt)
+        # chain = LLMChain(llm=chat, prompt=chat_prompt)
+        chain = chat_prompt | chat
+        result = chain.invoke({"zero_shot_prompt":zero_shot_prompt})
         return result  # returns string
 
     with st.form(key='prompt_magic'):
@@ -331,8 +338,9 @@ with tab6:
             [system_message_prompt, human_message_prompt]
         )
 
-        chain = LLMChain(llm=chat, prompt=chat_prompt)
-        result = chain.run(prompt=prompt)
+        # chain = LLMChain(llm=chat, prompt=chat_prompt)
+        chain = chat_prompt | chat
+        result = chain.invoke({"prompt":prompt})
         return result  # returns string
 
     with st.form(key='cot_prompt'):
@@ -364,8 +372,9 @@ with tab7:
             [system_message_prompt, human_message_prompt]
         )
 
-        chain = LLMChain(llm=llm, prompt=chat_prompt)
-        result = chain.run(module_string=description)
+        # chain = LLMChain(llm=llm, prompt=chat_prompt)
+        chain = chat_prompt | llm
+        result = chain.invoke({"module_string":description})
         # print (f" result is: {result}")
         return result # returns string
     
