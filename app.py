@@ -130,6 +130,15 @@ with tab1:
                     })
         return result # returns string
 
+    def make_prompt_v2(query):
+        prompt = hub.pull("melikecookie/prompt-maker")
+        runnable = prompt | llm
+        result = runnable.invoke({
+                        "task": query,
+                        "lazy_prompt": query,
+                    })
+        return result # returns string
+    
     
     initial_prompt = st.text_area("Enter your prompt:", height=200, placeholder=IMPROVE_PROMPT_PLACEHOLDER)
     
@@ -148,7 +157,10 @@ with tab1:
                     st.text_area(label="Fine-Tuned Prompt:",value=improved_prompt, height=250, max_chars=None, key=None)
 
                     supercharged_prompt=(supercharge_prompt(initial_prompt))
-                    st.text_area("Supercharged Prompt:",supercharged_prompt, height=250, max_chars=None, key=None) 
+                    st.text_area("Supercharged Prompt:",supercharged_prompt, height=250, max_chars=None, key=None)
+
+                    made_prompt_v2=(make_prompt_v2(initial_prompt))
+                    st.text_area("Prompt Maker V2:",made_prompt_v2, height=250, max_chars=None, key=None)
 
                 with col2:
                     refined_prompt=(refine_prompt(initial_prompt))
