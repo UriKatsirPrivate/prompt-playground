@@ -456,7 +456,7 @@ with tab8:
     prompt=st.text_area("Enter your prompt:",height=200, placeholder=Decomposition_Prompt,help=link)
     if st.button('Decomposition',disabled=not (project_id)  or project_id=="Your Project ID"):
         if prompt:
-            with st.spinner('decomposing...'):
+            with st.spinner('Decomposing...'):
                 inspection_result = decomposition(prompt)
             st.text_area('Result', inspection_result, height=250, max_chars=None, key=None)
         else:
@@ -467,22 +467,46 @@ with tab9:
         # https://smith.langchain.com/hub/uri-katsir/dare-determine_appropriate_response?organizationId=78e845bf-d7e9-43c7-8c2d-d0decc426c62
         hub_prompt = hub.pull("uri-katsir/dare-determine_appropriate_response")
 
-        
         runnable = hub_prompt | llm
         result = runnable.invoke({"vision": vision,"mission": mission,"context": context,"prompt": query})
         return result # returns string
-        
     
-    link="https://www.linkedin.com/posts/ram-seshadri-nyc-nj_how-do-you-reduce-hallucinations-ensure-activity-7085123540177285121-THrK/"
-    vision_help="Enter your vision: See help icon for more information about the DARE prompting technique:"
-    vision=st.text_input(vision_help ,placeholder="Marketing assistant",help=link)
-    mission=st.text_input("Enter your mission:", placeholder="Help people plan marketing events",help="")
-    context=st.text_area("Enter your context:",height=20, placeholder="You are a marketing assistant. Be as elaborate as makes sense",help="")
-    prompt=st.text_area("Enter your prompt:",height=100, placeholder="Plan cloud run marketing workshop",help="")
-    if st.button('D.A.R.E',disabled=not (project_id)  or project_id=="Your Project ID"):
-        if prompt:
-            with st.spinner('working on it...'):
-                dare_result = dare_it(prompt,vision,mission,context)
-            st.text_area('Result', dare_result, height=250, max_chars=None, key=None)
-        else:
-            st.markdown("Please enter a prompt.")            
+    def create_dare_artifacts(query):
+        hub_prompt = hub.pull("uri-katsir/dare-artifacts-generator")
+
+        user_input="Tweet about GCP"
+
+        runnable = hub_prompt | llm
+
+        result = runnable.invoke({"user_input": query})
+   
+        return result # returns string
+
+    with st.form(key='dare',clear_on_submit=False):        
+        link="https://www.linkedin.com/posts/ram-seshadri-nyc-nj_how-do-you-reduce-hallucinations-ensure-activity-7085123540177285121-THrK/"
+        vision_help="Enter your vision: See help icon for more information about the DARE prompting technique:"
+        vision=st.text_input(vision_help ,placeholder="Marketing assistant",help=link)
+        mission=st.text_input("Enter your mission:", placeholder="Help people plan marketing events",help="")
+        context=st.text_area("Enter your context:",height=20, placeholder="You are a marketing assistant. Be as elaborate as makes sense",help="")
+        prompt=st.text_area("Enter your prompt:",height=20, placeholder="Plan cloud run marketing workshop",help="")
+    
+        if st.form_submit_button('D.A.R.E',disabled=not (project_id)  or project_id=="Your Project ID"):
+            if prompt:
+                with st.spinner('working on it...'):
+                    dare_result = dare_it(prompt,vision,mission,context)
+                st.text_area('Result', dare_result, height=250, max_chars=None, key=None)
+            else:
+                st.markdown("Please enter a prompt.")
+
+    help_me=st.checkbox("Help Me Create D.A.R.E Artifacts")
+    if help_me:
+        # st.write('Enter your prompt below and click the button')
+        user_input=st.text_input("Enter your prompt below and click the button:")
+        if st.button(' D.A.R.E Artifacts',disabled=not (project_id)  or project_id=="Your Project ID"):
+            if user_input:
+                    with st.spinner('working on it...'):
+                        dare_artifacts_result = create_dare_artifacts(user_input)
+                    st.text_area('D.A.R.E Artifacts', dare_artifacts_result, height=250, max_chars=None, key=None)
+            else:
+                st.markdown("Please enter a prompt.")    
+                
