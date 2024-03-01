@@ -26,10 +26,9 @@ st.set_page_config(
     }
 )
 
-# PROJECT_ID=st.sidebar.text_input(label="Project ID",value="Your Project ID")
 LANGSMITH_KEY_NAME="langchain-api-key"
-REGIONS=["us-central1","europe-west4","us-west4","us-west1","us-east4","northamerica-northeast1","europe-west1","europe-west2","europe-west3","europe-west9"]
-MODEL_NAMES=['gemini-pro','text-bison-32k','text-bison','code-bison','code-bison-32k']
+REGIONS=["europe-west4","us-central1","us-west4","us-west1","us-east4"]
+MODEL_NAMES=['gemini-1.0-pro-001','text-bison-32k','code-bison-32k']
 
 def get_project_id():
     metadata_server_url = "http://metadata.google.internal/computeMetadata/v1/"
@@ -60,8 +59,8 @@ temperature = st.sidebar.slider('Enter temperature',min_value=0.0,max_value=1.0,
 top_p = st.sidebar.slider('Enter top_p',min_value=0.0,max_value=1.0,step=0.1,value=0.8)
 top_k = st.sidebar.slider('Enter top_k',min_value=1,max_value=40,step=1,value=40)
 
-if not ('32k' in model_name or 'gemini' in model_name) and max_tokens>1024:
-  st.error(f'{max_tokens} output tokens is not a valid value for model {model_name}')
+# if not ('32k' in model_name or 'gemini' in model_name) and max_tokens>1024:
+#   st.error(f'{max_tokens} output tokens is not a valid value for model {model_name}')
 
 # Initialize tracing variables
 tracing = st.sidebar.toggle('Enable Langsmith Tracing',disabled=True)
@@ -87,14 +86,13 @@ css = '''
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
-tab1, tab2, tab3, tab4, tab5, tab6,tab7,tab8,tab9= st.tabs(["Fine-Tune Prompt / "
+tab1, tab2, tab3, tab4, tab5, tab6,tab7,tab8= st.tabs(["Fine-Tune Prompt / "
                                              , "Analysis & Enhancement /"          
                                              , "Inspect Prompt / "
                                              ,"Run Prompt / "
                                              ,"Zero to Few / "
                                              ,"Chain of Thought / "
                                              ,"Images / "
-                                             ,"Decomposition / "
                                              ,"D.A.R.E Prompting"
                                              ])
 
@@ -440,28 +438,28 @@ with tab7:
                            st.markdown("No images generated. Prompt was blocked.")     
                 else:
                     st.markdown("No images generated. Please enter a valid prompt.")      
-with tab8:
-    def decomposition(query):
+# with tab8:
+#     def decomposition(query):
         
-        # llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p,top_k)
-        # https://docs.smith.langchain.com/hub/dev-setup
-        prompt = hub.pull("smithing-gold/question-decomposition")
+#         # llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p,top_k)
+#         # https://docs.smith.langchain.com/hub/dev-setup
+#         prompt = hub.pull("smithing-gold/question-decomposition")
 
-        runnable = prompt | llm
-        result = runnable.invoke({"question": query})
-        return result # returns string
+#         runnable = prompt | llm
+#         result = runnable.invoke({"question": query})
+#         return result # returns string
         
     
-    link="The general approach is to ask for self-contained questions to decompose the original user's query."                
-    prompt=st.text_area("Enter your prompt:",height=200, placeholder=Decomposition_Prompt,help=link)
-    if st.button('Decomposition',disabled=not (project_id)  or project_id=="Your Project ID"):
-        if prompt:
-            with st.spinner('Decomposing...'):
-                inspection_result = decomposition(prompt)
-            st.text_area('Result', inspection_result, height=250, max_chars=None, key=None)
-        else:
-            st.markdown("Please enter a prompt.")
-with tab9:
+#     link="The general approach is to ask for self-contained questions to decompose the original user's query."                
+#     prompt=st.text_area("Enter your prompt:",height=200, placeholder=Decomposition_Prompt,help=link)
+#     if st.button('Decomposition',disabled=not (project_id)  or project_id=="Your Project ID"):
+#         if prompt:
+#             with st.spinner('Decomposing...'):
+#                 inspection_result = decomposition(prompt)
+#             st.text_area('Result', inspection_result, height=250, max_chars=None, key=None)
+#         else:
+#             st.markdown("Please enter a prompt.")
+with tab8:
     def dare_it(query,vision,mission,context):
         
         # https://smith.langchain.com/hub/uri-katsir/dare-determine_appropriate_response?organizationId=78e845bf-d7e9-43c7-8c2d-d0decc426c62
