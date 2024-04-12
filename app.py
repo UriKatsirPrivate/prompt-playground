@@ -27,8 +27,8 @@ st.set_page_config(
 )
 
 LANGSMITH_KEY_NAME="langchain-api-key"
-REGIONS=["europe-west4","us-central1","us-west4","us-west1","us-east4"]
-MODEL_NAMES=['gemini-1.0-pro-001','text-bison-32k','code-bison-32k']
+REGIONS=["me-west1","europe-west4","us-central1","us-west4","us-west1","us-east4"]
+MODEL_NAMES=['gemini-1.5-pro-preview-0409','gemini-1.0-pro-002','gemini-1.0-pro-001','code-bison-32k']
 
 def get_project_id():
     metadata_server_url = "http://metadata.google.internal/computeMetadata/v1/"
@@ -55,7 +55,7 @@ project_id=PROJECT_ID
 region=st.sidebar.selectbox("Please enter the region",REGIONS)
 model_name = st.sidebar.selectbox('Enter model name',MODEL_NAMES)
 max_tokens = st.sidebar.slider('Enter max token output',min_value=1,max_value=8192,step=100,value=8192)
-temperature = st.sidebar.slider('Enter temperature',min_value=0.0,max_value=1.0,step=0.1,value=0.1)
+temperature = st.sidebar.slider('Enter temperature',min_value=0.0,max_value=1.0,step=0.1,value=0.5)
 top_p = st.sidebar.slider('Enter top_p',min_value=0.0,max_value=1.0,step=0.1,value=0.8)
 top_k = st.sidebar.slider('Enter top_k',min_value=1,max_value=40,step=1,value=40)
 
