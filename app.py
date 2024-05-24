@@ -28,7 +28,7 @@ st.set_page_config(
 
 LANGSMITH_KEY_NAME="langchain-api-key"
 REGIONS=["me-west1","europe-west4","us-central1","us-west4","us-west1"]
-MODEL_NAMES=['gemini-1.5-pro-preview-0514','gemini-1.5-flash-preview-0514','gemini-1.0-pro-002']
+MODEL_NAMES=['gemini-1.5-pro-001','gemini-1.5-flash-001','gemini-1.0-pro-002']
 
 def get_project_id():
     metadata_server_url = "http://metadata.google.internal/computeMetadata/v1/"
@@ -57,7 +57,7 @@ model_name = st.sidebar.selectbox('Enter model name',MODEL_NAMES)
 max_tokens = st.sidebar.slider('Enter max token output',min_value=1,max_value=8192,step=100,value=8192)
 temperature = st.sidebar.slider('Enter temperature',min_value=0.0,max_value=2.0,step=0.1,value=1.0)
 top_p = st.sidebar.slider('Enter top_p',min_value=0.0,max_value=1.0,step=0.1,value=0.8)
-top_k = st.sidebar.slider('Enter top_k',min_value=1,max_value=40,step=1,value=40)
+# top_k = st.sidebar.slider('Enter top_k',min_value=1,max_value=40,step=1,value=40)
 
 # if not ('32k' in model_name or 'gemini' in model_name) and max_tokens>1024:
 #   st.error(f'{max_tokens} output tokens is not a valid value for model {model_name}')
@@ -96,7 +96,7 @@ tab1, tab2, tab3, tab4, tab5, tab6,tab7,tab8= st.tabs(["Fine-Tune Prompt / "
                                              ,"D.A.R.E Prompting"
                                              ])
 
-llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p,top_k)
+llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p)
 
 
 with tab1:
@@ -209,7 +209,7 @@ with tab2:
 with tab3:
     def securityInspector(prompt):
     
-        llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p,top_k)
+        llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p)
 
         system_template = """You are a security analyst. Your task is to inspect the given prompt for any potential security issues."""
         system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)

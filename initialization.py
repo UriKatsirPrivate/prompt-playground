@@ -5,7 +5,7 @@ from langchain_google_vertexai import VertexAI
 from google.cloud import secretmanager
 
 # Initialize LLM
-def initialize_llm(project_id,region,model_name,max_output_tokens,temperature,top_p,top_k):
+def initialize_llm(project_id,region,model_name,max_output_tokens,temperature,top_p):
     
     # Initialize VertexAI and set up the LLM
     return VertexAI(
@@ -15,7 +15,7 @@ def initialize_llm(project_id,region,model_name,max_output_tokens,temperature,to
         max_output_tokens=max_output_tokens,
         temperature=temperature,
         top_p=top_p,
-        top_k=top_k,
+        # top_k=top_k,
         verbose=True,
     )
 
