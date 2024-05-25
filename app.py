@@ -13,6 +13,7 @@ from prompts import PROMPT_IMPROVER_PROMPT
 from placeholders import *
 from system_prompts import *
 import requests
+from meta_prompt import *
 
 # https://docs.streamlit.io/library/api-reference/utilities/st.set_page_config
 st.set_page_config(
@@ -86,14 +87,15 @@ css = '''
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
-tab1, tab2, tab3, tab4, tab5, tab6,tab7,tab8= st.tabs(["Fine-Tune Prompt / "
-                                             , "Analysis & Enhancement /"          
-                                             , "Inspect Prompt / "
+tab1, tab2, tab3, tab4, tab5, tab6,tab7,tab8,tab9= st.tabs(["Fine-Tune Prompt / "
+                                             ,"MetaPrompt /"          
+                                             ,"Analysis & Enhancement / "
                                              ,"Run Prompt / "
                                              ,"Zero to Few / "
                                              ,"Chain of Thought / "
-                                             ,"Images / "
-                                             ,"D.A.R.E Prompting"
+                                             ,"D.A.R.E Prompting / "
+                                             ,"Inspect Prompt / "
+                                             ,"Images"
                                              ])
 
 llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p)
@@ -171,7 +173,7 @@ with tab1:
                     st.text_area("Prompt Maker:",made_prompt, height=250, max_chars=None, key=None) 
         else:
             st.error(f"Please provide a prompt")
-with tab2:
+with tab3:
     def analysis_and_enhancement(prompt):
     
         hub_prompt = hub.pull("collinsomniac/ultimate_nlp_taskprompt-inspired_by_hardkothari")
@@ -206,7 +208,7 @@ with tab2:
             display_result(execution_result)
         else:
             st.warning('Please enter a prompt before executing.')
-with tab3:
+with tab8:
     def securityInspector(prompt):
     
         llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p)
@@ -373,7 +375,7 @@ with tab6:
                 st.text(cot_prompt)
             else:
                 st.text("Please enter a prompt")    
-with tab7:
+with tab9:
     def GenerateImagePrompt(description,number):
         
         system_template = GenerateImageSystemPrompt
@@ -440,28 +442,7 @@ with tab7:
                            st.markdown("No images generated. Prompt was blocked.")     
                 else:
                     st.markdown("No images generated. Please enter a valid prompt.")      
-# with tab8:
-#     def decomposition(query):
-        
-#         # llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p,top_k)
-#         # https://docs.smith.langchain.com/hub/dev-setup
-#         prompt = hub.pull("smithing-gold/question-decomposition")
-
-#         runnable = prompt | llm
-#         result = runnable.invoke({"question": query})
-#         return result # returns string
-        
-    
-#     link="The general approach is to ask for self-contained questions to decompose the original user's query."                
-#     prompt=st.text_area("Enter your prompt:",height=200, placeholder=Decomposition_Prompt,help=link)
-#     if st.button('Decomposition',disabled=not (project_id)  or project_id=="Your Project ID"):
-#         if prompt:
-#             with st.spinner('Decomposing...'):
-#                 inspection_result = decomposition(prompt)
-#             st.text_area('Result', inspection_result, height=250, max_chars=None, key=None)
-#         else:
-#             st.markdown("Please enter a prompt.")
-with tab8:
+with tab7:
     def dare_it(query,vision,mission,context):
         
         # https://smith.langchain.com/hub/uri-katsir/dare-determine_appropriate_response?organizationId=78e845bf-d7e9-43c7-8c2d-d0decc426c62
@@ -509,4 +490,25 @@ with tab8:
                     st.text_area('D.A.R.E Artifacts', dare_artifacts_result, height=250, max_chars=None, key=None)
             else:
                 st.markdown("Please enter a prompt.")    
+with tab2:
+    
+    with st.form(key='metaprompt'):
+        prompt = st.text_area("Enter prompt:",height=200,placeholder="")
+        submit_button = st.form_submit_button(label='Submit Prompt',disabled=not (project_id)  or project_id=="Your Project ID")
+        
+        if submit_button:
+            if prompt:
+                TASK=prompt
+                with st.spinner('Working on it...'):
+                    prompt = metaprompt.replace("{{TASK}}", TASK)
+                    assistant_partial = "<Inputs>"
+                    message=llm.invoke(prompt)
+                    meta_prompt=message
+            else:
+                meta_prompt = ""
+            # Display the meta prompt
+            if prompt is not None and len(str(meta_prompt)) > 0:
+                st.text(meta_prompt)
+            else:
+                st.text("Please enter a prompt")
                 
