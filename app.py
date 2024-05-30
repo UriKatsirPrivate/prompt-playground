@@ -493,7 +493,8 @@ with tab7:
 with tab2:
     
     with st.form(key='metaprompt'):
-        prompt = st.text_area("Enter prompt:",height=200,placeholder="")
+        link="https://meta-prompting.github.io/"
+        prompt = st.text_area("Enter prompt:",height=200,placeholder="",help=link)
         submit_button = st.form_submit_button(label='Submit Prompt',disabled=not (project_id)  or project_id=="Your Project ID")
         
         if submit_button:
