@@ -44,15 +44,19 @@ def get_project_id():
             return None
     except requests.RequestException as e:
         print(f"Error: {e}")
+        # return "landing-zone-demo-341118"
         return None
 
-PROJECT_ID=st.sidebar.text_input(label="Project ID",value="Your Project ID")
-if PROJECT_ID=="" or PROJECT_ID=="Your Project ID":
-    # print("getting project id")
-    PROJECT_ID=get_project_id()
+# PROJECT_ID=st.sidebar.text_input(label="Project ID",value="Your Project ID")
+# PROJECT_ID=get_project_id()
+project_id=get_project_id()
+
+# if PROJECT_ID=="" or PROJECT_ID=="Your Project ID":
+#     # print("getting project id")
+#     PROJECT_ID=get_project_id()
     
-st.sidebar.write("Project ID: ",f"{PROJECT_ID}") 
-project_id=PROJECT_ID
+st.sidebar.write("Project ID: ",f"{project_id}") 
+# project_id=PROJECT_ID
 region=st.sidebar.selectbox("Please enter the region",REGIONS)
 model_name = st.sidebar.selectbox('Enter model name',MODEL_NAMES)
 max_tokens = st.sidebar.slider('Enter max token output',min_value=1,max_value=8192,step=100,value=8192)
@@ -281,7 +285,7 @@ with tab4:
     def display_result(execution_result):
         if execution_result != "":
             # st.markdown(f"**Execution Result:** {execution_result}")
-            st.code(execution_result)
+            st.text(execution_result)
         else:
             st.warning('No result to display.')
 
