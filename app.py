@@ -74,7 +74,7 @@ langsmith_project = st.sidebar.text_input(label="Langsmith Project", value="prom
 
 # Check if initialize_tracing() has already been called
 if 'tracing_initialized' not in st.session_state and tracing:
-    initialize_tracing(tracing,langsmith_endpoint,langsmith_project,PROJECT_ID,LANGSMITH_KEY_NAME)
+    initialize_tracing(tracing,langsmith_endpoint,langsmith_project,project_id,LANGSMITH_KEY_NAME)
     # Set the flag to indicate that initialize_tracing() has been called
     st.session_state.tracing_initialized = True
 
