@@ -529,10 +529,13 @@ with tab10:
         if submit_button:
             with st.spinner('Working on it...'):
                 trimmed_text = trim(prompt)
+                # trimmed_text = "trim(prompt)"
                     
             # Display the trimmed prompt
             if prompt is not None and len(str(trimmed_text)) > 0:
                 st.text_area(label="Compressed Prompt",value=trimmed_text, height=250, max_chars=None, key=None)
-                # st.text(trimmed_text)
+                st.text("Original Prompt Length: " + str(len(prompt)))
+                st.text("Compressed Prompt Length: " + str(len(trimmed_text)))
+                st.text("Reduction %: " + "%.2f" % ((len(prompt) - len(trimmed_text)) / len(prompt) * 100))
             else:
                 st.text("Please enter a prompt")                
