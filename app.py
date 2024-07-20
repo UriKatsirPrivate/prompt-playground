@@ -9,6 +9,7 @@ import vertexai
 
 from vertexai.preview.vision_models import Image, ImageGenerationModel
 from langchain import hub
+from gptrim import trim
 from prompts import PROMPT_IMPROVER_PROMPT
 from placeholders import *
 from system_prompts import *
@@ -91,7 +92,7 @@ css = '''
 </style>
 '''
 st.markdown(css, unsafe_allow_html=True)
-tab1, tab2, tab3, tab4, tab5, tab6,tab7,tab8,tab9= st.tabs(["Fine-Tune Prompt / "
+tab1, tab2, tab3, tab4, tab5, tab6,tab7,tab8,tab9,tab10 = st.tabs(["Fine-Tune Prompt / "
                                              ,"MetaPrompt /"          
                                              ,"Analysis & Enhancement / "
                                              ,"Run Prompt / "
@@ -99,7 +100,8 @@ tab1, tab2, tab3, tab4, tab5, tab6,tab7,tab8,tab9= st.tabs(["Fine-Tune Prompt / 
                                              ,"Chain of Thought / "
                                              ,"D.A.R.E Prompting / "
                                              ,"Inspect Prompt / "
-                                             ,"Images"
+                                             ,"Images / "
+                                             ,"Compress Prompt"
                                              ])
 
 llm = initialize_llm(project_id,region,model_name,max_tokens,temperature,top_p)
@@ -285,7 +287,8 @@ with tab4:
     def display_result(execution_result):
         if execution_result != "":
             # st.markdown(f"**Execution Result:** {execution_result}")
-            st.text(execution_result)
+            st.text_area(label="Execution Result",value=execution_result, height=250, max_chars=None, key=None)
+            # st.text(execution_result)
         else:
             st.warning('No result to display.')
 
@@ -516,4 +519,20 @@ with tab2:
                 st.text(meta_prompt)
             else:
                 st.text("Please enter a prompt")
-                
+
+with tab10:
+    
+    with st.form(key='compressprompt'):
+        prompt = st.text_area("Enter Prompt:",height=200,placeholder="",help=link)
+        submit_button = st.form_submit_button(label='Submit Prompt',disabled=not (project_id)  or project_id=="Your Project ID")
+        
+        if submit_button:
+            with st.spinner('Working on it...'):
+                trimmed_text = trim(prompt)
+                    
+            # Display the trimmed prompt
+            if prompt is not None and len(str(trimmed_text)) > 0:
+                st.text_area(label="Compressed Prompt",value=trimmed_text, height=250, max_chars=None, key=None)
+                # st.text(trimmed_text)
+            else:
+                st.text("Please enter a prompt")                
