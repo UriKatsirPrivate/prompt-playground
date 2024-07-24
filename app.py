@@ -30,7 +30,7 @@ st.set_page_config(
 
 LANGSMITH_KEY_NAME="langchain-api-key"
 REGIONS=["me-west1","europe-west4","us-central1","us-west4","us-west1"]
-MODEL_NAMES=['gemini-1.5-pro-001','gemini-1.5-flash-001','gemini-1.0-pro-002']
+MODEL_NAMES=['gemini-1.5-pro-001','gemini-1.5-flash-001']
 
 def get_project_id():
     metadata_server_url = "http://metadata.google.internal/computeMetadata/v1/"
@@ -58,11 +58,11 @@ project_id=get_project_id()
     
 st.sidebar.write("Project ID: ",f"{project_id}") 
 # project_id=PROJECT_ID
-region=st.sidebar.selectbox("Please enter the region",REGIONS)
-model_name = st.sidebar.selectbox('Enter model name',MODEL_NAMES)
-max_tokens = st.sidebar.slider('Enter max token output',min_value=1,max_value=8192,step=100,value=8192)
-temperature = st.sidebar.slider('Enter temperature',min_value=0.0,max_value=2.0,step=0.1,value=1.0)
-top_p = st.sidebar.slider('Enter top_p',min_value=0.0,max_value=1.0,step=0.1,value=0.8)
+region=st.sidebar.selectbox("Region",REGIONS)
+model_name = st.sidebar.selectbox('Model Name',MODEL_NAMES)
+max_tokens = st.sidebar.slider('Output Token Limit',min_value=1,max_value=8192,step=100,value=8192)
+temperature = st.sidebar.slider('Temperature',min_value=0.0,max_value=2.0,step=0.1,value=1.0)
+top_p = st.sidebar.slider('Top-P',min_value=0.0,max_value=1.0,step=0.1,value=0.8)
 # top_k = st.sidebar.slider('Enter top_k',min_value=1,max_value=40,step=1,value=40)
 
 # if not ('32k' in model_name or 'gemini' in model_name) and max_tokens>1024:
@@ -523,7 +523,7 @@ with tab2:
 with tab10:
     
     with st.form(key='compressprompt'):
-        prompt = st.text_area("Enter Prompt:",height=200,placeholder="",help=link)
+        prompt = st.text_area("Enter Prompt:",height=200,placeholder="")
         submit_button = st.form_submit_button(label='Submit Prompt',disabled=not (project_id)  or project_id=="Your Project ID")
         
         if submit_button:
