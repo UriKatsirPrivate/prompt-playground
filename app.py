@@ -404,7 +404,7 @@ with tab9:
             vertexai.init(project=project_id, location=region)
 
             # model = ImageGenerationModel.from_pretrained(model_name)
-            model = ImageGenerationModel.from_pretrained("imagegeneration@005")
+            model = ImageGenerationModel.from_pretrained("imagen-3.0-generate-001")
             images = model.generate_images(
             prompt=description,
             # Optional:
@@ -420,7 +420,7 @@ with tab9:
             st.image("./gen-img1.png",use_column_width="auto")
    
     link="https://cloud.google.com/vertex-ai/docs/generative-ai/image/img-gen-prompt-guide"
-    desc="Write your prompt below, See help icon for a prompt guide: (Images will be generated using the Imagen 2 model)"
+    desc="Write your prompt below, See help icon for a prompt guide: (Images will be generated using the Imagen3 model)"
     description = st.text_area(desc,height=200,key=55,placeholder=GENERATE_IMAGES,help=link)
     # num_of_images=st.number_input("How many images to generate",min_value=1,max_value=8,value=4)
     
