@@ -1,6 +1,6 @@
-google-cloud-aiplatform==1.60.0
-watchdog==4.0.1
-streamlit==1.34.0
+google-cloud-aiplatform==1.65.0
+watchdog==5.0.2
+streamlit==1.38.0
 langchain==0.2.11
 google-cloud-aiplatform[preview]
 google-cloud-secret-manager==2.20.2
