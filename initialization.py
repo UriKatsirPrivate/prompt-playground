@@ -19,13 +19,6 @@ def initialize_llm(project_id,region,model_name,max_output_tokens,temperature,to
         verbose=True,
     )
 
-# Initialize Tracing
-def initialize_tracing(tracing,endpoint,langsmith_project,gcp_project,langsmith_key_name):
-    os.environ["LANGCHAIN_TRACING_V2"]=str(tracing)
-    os.environ["LANGCHAIN_ENDPOINT"] =endpoint
-    os.environ["LANGCHAIN_API_KEY"] = get_from_secrets_manager(langsmith_key_name,gcp_project)
-    # os.environ["LANGCHAIN_API_KEY"] = get_from_secrets_manager("langchain-api-key",gcp_project)
-    os.environ["LANGCHAIN_PROJECT"] = langsmith_project
 
 def get_from_secrets_manager(secret_name,gcp_project):
     # if langsmith_key:

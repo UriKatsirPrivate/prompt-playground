@@ -1,10 +1,9 @@
 import os
 import streamlit as st
-# from langchain.chains import LLMChain
 from langchain.prompts.chat import (ChatPromptTemplate,
                                     HumanMessagePromptTemplate,
                                     SystemMessagePromptTemplate)
-from initialization import initialize_llm, initialize_tracing
+from initialization import initialize_llm
 import vertexai
 
 from vertexai.preview.vision_models import Image, ImageGenerationModel
@@ -28,9 +27,8 @@ st.set_page_config(
     }
 )
 
-LANGSMITH_KEY_NAME="langchain-api-key"
 REGIONS=["me-west1","europe-west4","us-central1","us-west4","us-west1"]
-MODEL_NAMES=['gemini-1.5-pro-001','gemini-1.5-flash-001']
+MODEL_NAMES=['gemini-1.5-pro-002','gemini-1.5-flash-002','gemini-1.5-pro-001','gemini-1.5-flash-001']
 
 def get_project_id():
     metadata_server_url = "http://metadata.google.internal/computeMetadata/v1/"
@@ -48,41 +46,13 @@ def get_project_id():
         # return "landing-zone-demo-341118"
         return None
 
-# PROJECT_ID=st.sidebar.text_input(label="Project ID",value="Your Project ID")
-# PROJECT_ID=get_project_id()
 project_id=get_project_id()
-
-# if PROJECT_ID=="" or PROJECT_ID=="Your Project ID":
-#     # print("getting project id")
-#     PROJECT_ID=get_project_id()
-    
 st.sidebar.write("Project ID: ",f"{project_id}") 
-# project_id=PROJECT_ID
 region=st.sidebar.selectbox("Region",REGIONS)
 model_name = st.sidebar.selectbox('Model Name',MODEL_NAMES)
 max_tokens = st.sidebar.slider('Output Token Limit',min_value=1,max_value=8192,step=100,value=8192)
 temperature = st.sidebar.slider('Temperature',min_value=0.0,max_value=2.0,step=0.1,value=1.0)
 top_p = st.sidebar.slider('Top-P',min_value=0.0,max_value=1.0,step=0.1,value=0.8)
-# top_k = st.sidebar.slider('Enter top_k',min_value=1,max_value=40,step=1,value=40)
-
-# if not ('32k' in model_name or 'gemini' in model_name) and max_tokens>1024:
-#   st.error(f'{max_tokens} output tokens is not a valid value for model {model_name}')
-
-# Initialize tracing variables
-tracing = st.sidebar.toggle('Enable Langsmith Tracing',disabled=True)
-langsmith_endpoint = st.sidebar.text_input(label="Langsmith Endpoint", value="https://api.smith.langchain.com", disabled=not tracing)
-langsmith_project = st.sidebar.text_input(label="Langsmith Project", value="prompt-playground", disabled=not tracing)
-
-# Check if initialize_tracing() has already been called
-if 'tracing_initialized' not in st.session_state and tracing:
-    initialize_tracing(tracing,langsmith_endpoint,langsmith_project,project_id,LANGSMITH_KEY_NAME)
-    # Set the flag to indicate that initialize_tracing() has been called
-    st.session_state.tracing_initialized = True
-
-if tracing:
-    os.environ["LANGCHAIN_TRACING_V2"]="True"
-else:
-    os.environ["LANGCHAIN_TRACING_V2"]="False"
 
 css = '''
 <style>
@@ -145,11 +115,9 @@ with tab1:
                     })
         return result # returns string
     
-    
     initial_prompt = st.text_area("Enter your prompt:", height=200, placeholder=IMPROVE_PROMPT_PLACEHOLDER)
     
     # Initialize LLMChain
-    # prompt_improver_chain = LLMChain(llm=llm, prompt=PROMPT_IMPROVER_PROMPT)
     prompt=PROMPT_IMPROVER_PROMPT
     prompt_improver_chain = prompt | llm
 
@@ -286,9 +254,7 @@ with tab4:
 
     def display_result(execution_result):
         if execution_result != "":
-            # st.markdown(f"**Execution Result:** {execution_result}")
             st.text_area(label="Execution Result",value=execution_result, height=250, max_chars=None, key=None)
-            # st.text(execution_result)
         else:
             st.warning('No result to display.')
 
@@ -359,7 +325,6 @@ with tab6:
             [system_message_prompt, human_message_prompt]
         )
 
-        # chain = LLMChain(llm=chat, prompt=chat_prompt)
         chain = chat_prompt | chat
         result = chain.invoke({"prompt":prompt})
         return result  # returns string

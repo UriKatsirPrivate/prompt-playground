@@ -1,5 +1,5 @@
-google-cloud-aiplatform==1.65.0
-watchdog==5.0.2
+google-cloud-aiplatform==1.68.0
+watchdog<5.0.0
 streamlit==1.38.0
 langchain==0.2.11
 google-cloud-aiplatform[preview]
