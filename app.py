@@ -390,14 +390,15 @@ with tab9:
             st.image("./gen-img1.png",use_column_width="auto")
    
     
-    link="https://cloud.google.com/vertex-ai/docs/generative-ai/image/img-gen-prompt-guide"
-    desc="Write your prompt below, See help icon for a prompt guide: (Images will be generated using the Imagen3 model)"
-    description = st.text_area(desc,height=200,key=55,placeholder=GENERATE_IMAGES,help=link)
-    # num_of_images=st.number_input("How many images to generate",min_value=1,max_value=8,value=4)
-    
-    col1, col2 = st.columns(2,gap="large")
-    with col1:
-        with st.form(key='prompt_magic10',clear_on_submit=False):
+    with st.form(key='prompt_magic10',clear_on_submit=False):
+        link="https://cloud.google.com/vertex-ai/docs/generative-ai/image/img-gen-prompt-guide"
+        desc="Write your prompt below, See help icon for a prompt guide: (Images will be generated using the Imagen3 model)"
+        description = st.text_area(desc,height=200,key=55,placeholder=GENERATE_IMAGES,help=link)
+        # num_of_images=st.number_input("How many images to generate",min_value=1,max_value=8,value=4)
+        
+        col1, col2 = st.columns(2,gap="large")
+        with col1:
+        # with st.form(key='prompt_magic10',clear_on_submit=False):
             num_of_prompts=st.number_input("How many prompts to generate",min_value=2,max_value=4,value=2)
             if st.form_submit_button('Generate Prompt(s)',disabled=not (project_id)  or project_id=="Your Project ID"):
                 if description:
@@ -406,8 +407,9 @@ with tab9:
                     st.markdown(improved_prompt)
                 else:
                     st.markdown("No prompts generated. Please enter a valid prompt.")        
-    with col2:
-        with st.form(key='prompt_magic1',clear_on_submit=False):                
+    with st.form(key='prompt_magic1',clear_on_submit=False):
+        with col2:
+        # with st.form(key='prompt_magic1',clear_on_submit=False):                
         
             num_of_images=st.number_input("How many images to generate",min_value=1,max_value=8,value=4)
             if st.form_submit_button('Generate Image(s)',disabled=not (project_id)  or project_id=="Your Project ID"):
