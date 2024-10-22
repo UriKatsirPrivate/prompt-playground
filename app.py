@@ -43,7 +43,7 @@ def get_project_id():
             return None
     except requests.RequestException as e:
         print(f"Error: {e}")
-        # return "landing-zone-demo-341118"
+        return "landing-zone-demo-341118"
         return None
 
 project_id=get_project_id()
@@ -115,38 +115,40 @@ with tab1:
                     })
         return result # returns string
     
-    initial_prompt = st.text_area("Enter your prompt:", height=200, placeholder=IMPROVE_PROMPT_PLACEHOLDER)
+    with st.form(key='tune',clear_on_submit=False):
     
-    # Initialize LLMChain
-    prompt=PROMPT_IMPROVER_PROMPT
-    prompt_improver_chain = prompt | llm
+        initial_prompt = st.text_area("Enter your prompt:", height=200, placeholder=IMPROVE_PROMPT_PLACEHOLDER)
+        
+        # Initialize LLMChain
+        prompt=PROMPT_IMPROVER_PROMPT
+        prompt_improver_chain = prompt | llm
 
-    # Run LLMChain
-    if st.button('Fine-Tune Prompt',disabled=not (project_id)  or project_id=="Your Project ID"):
-    
-        if initial_prompt:
-            
-            with st.spinner("Generating Prompts..."):
-                col1, col2= st.columns(2,gap="medium")
-                with col1:
-                    improved_prompt = prompt_improver_chain.invoke(initial_prompt)
-                    st.text_area(label="Fine-Tuned Prompt:",value=improved_prompt, height=250, max_chars=None, key=None)
+        # Run LLMChain
+        if st.form_submit_button('Fine-Tune Prompt',disabled=not (project_id)  or project_id=="Your Project ID"):
+        
+            if initial_prompt:
+                
+                with st.spinner("Generating Prompts..."):
+                    col1, col2= st.columns(2,gap="medium")
+                    with col1:
+                        improved_prompt = prompt_improver_chain.invoke(initial_prompt)
+                        st.text_area(label="Fine-Tuned Prompt:",value=improved_prompt, height=250, max_chars=None, key=None)
 
-                    supercharged_prompt=(supercharge_prompt(initial_prompt))
-                    st.text_area("Supercharged Prompt:",supercharged_prompt, height=250, max_chars=None, key=None)
+                        supercharged_prompt=(supercharge_prompt(initial_prompt))
+                        st.text_area("Supercharged Prompt:",supercharged_prompt, height=250, max_chars=None, key=None)
 
-                    made_prompt_v2=(make_prompt_v2(initial_prompt))
-                    st.text_area("Prompt Maker V2:",made_prompt_v2, height=250, max_chars=None, key=None)
+                        made_prompt_v2=(make_prompt_v2(initial_prompt))
+                        st.text_area("Prompt Maker V2:",made_prompt_v2, height=250, max_chars=None, key=None)
 
-                with col2:
-                    refined_prompt=(refine_prompt(initial_prompt))
-                    # st.markdown(""" ### Refined Prompt:""")
-                    st.text_area("Refined Prompt:",refined_prompt, height=250, max_chars=None, key=None)    
+                    with col2:
+                        refined_prompt=(refine_prompt(initial_prompt))
+                        # st.markdown(""" ### Refined Prompt:""")
+                        st.text_area("Refined Prompt:",refined_prompt, height=250, max_chars=None, key=None)    
 
-                    made_prompt=(make_prompt(initial_prompt))
-                    st.text_area("Prompt Maker:",made_prompt, height=250, max_chars=None, key=None) 
-        else:
-            st.error(f"Please provide a prompt")
+                        made_prompt=(make_prompt(initial_prompt))
+                        st.text_area("Prompt Maker:",made_prompt, height=250, max_chars=None, key=None) 
+            else:
+                st.error(f"Please provide a prompt")
 with tab3:
     def analysis_and_enhancement(prompt):
     
@@ -172,16 +174,17 @@ with tab3:
         else:
             st.warning('No result to display.')
 
+    with st.form(key='analysis',clear_on_submit=False):
     #Get the prompt from the user
-    prompt = st.text_area('Enter your prompt:',height=200, key=33,placeholder="tweet about Israel")
-    
-    if st.button('Analysis & Enhancement',disabled=not (project_id)  or project_id=="Your Project ID"):
-        if prompt:
-            with st.spinner('Analyzing prompt...'):
-                execution_result = analysis_and_enhancement(prompt)
-            display_result(execution_result)
-        else:
-            st.warning('Please enter a prompt before executing.')
+        prompt = st.text_area('Enter your prompt:',height=200, key=33,placeholder="tweet about Israel")
+        
+        if st.form_submit_button('Analysis & Enhancement',disabled=not (project_id)  or project_id=="Your Project ID"):
+            if prompt:
+                with st.spinner('Analyzing prompt...'):
+                    execution_result = analysis_and_enhancement(prompt)
+                display_result(execution_result)
+            else:
+                st.warning('Please enter a prompt before executing.')
 with tab8:
     def securityInspector(prompt):
     
@@ -222,20 +225,21 @@ with tab8:
         else:
             st.markdown("No modifications needed.")
                     
-    prompt=st.text_area("Enter your prompt:",height=200, placeholder=INSPECT_PROMPT_PLACEHOLDER)
-    if st.button('Inspect and Modify Prompt',disabled=not (project_id)  or project_id=="Your Project ID"):
-        if prompt:
-            with st.spinner('Inspecting prompt...'):
-                inspection_result = securityInspector(prompt)
-            st.text_area('Inspection Result', inspection_result, height=200, max_chars=None, key=None)
-            # print(inspection_result)
-            # if (inspection_result != "System: The prompt you provided does not contain any security issues."):
-            if ("does not contain any security issues" not in inspection_result):
-                with st.spinner('Creating Safe Prompt...'):
-                    safe_prompt = safePromptSuggester(inspection_result)
-                displaySafePrompt(safe_prompt)
-        else:
-            st.markdown("Please enter a prompt.")
+    with st.form(key='inspect',clear_on_submit=False):
+        prompt=st.text_area("Enter your prompt:",height=200, placeholder=INSPECT_PROMPT_PLACEHOLDER)
+        if st.form_submit_button('Inspect and Modify Prompt',disabled=not (project_id)  or project_id=="Your Project ID"):
+            if prompt:
+                with st.spinner('Inspecting prompt...'):
+                    inspection_result = securityInspector(prompt)
+                st.text_area('Inspection Result', inspection_result, height=200, max_chars=None, key=None)
+                # print(inspection_result)
+                # if (inspection_result != "System: The prompt you provided does not contain any security issues."):
+                if ("does not contain any security issues" not in inspection_result):
+                    with st.spinner('Creating Safe Prompt...'):
+                        safe_prompt = safePromptSuggester(inspection_result)
+                    displaySafePrompt(safe_prompt)
+            else:
+                st.markdown("Please enter a prompt.")
 with tab4:
     def promptExecutor(prompt):
     
@@ -258,16 +262,17 @@ with tab4:
         else:
             st.warning('No result to display.')
 
+    with st.form(key='runprompt'):
     #Get the prompt from the user
-    prompt = st.text_area('Enter your prompt:',height=200, key=3,placeholder=RUN_PROMPT_PLACEHOLDER)
-    
-    if st.button('Execute Prompt',disabled=not (project_id)  or project_id=="Your Project ID"):
-        if prompt:
-            with st.spinner('Running prompt...'):
-                execution_result = promptExecutor(prompt)
-            display_result(execution_result)
-        else:
-            st.warning('Please enter a prompt before executing.')
+        prompt = st.text_area('Enter your prompt:',height=200, key=3,placeholder=RUN_PROMPT_PLACEHOLDER)
+        
+        if st.form_submit_button('Execute Prompt',disabled=not (project_id)  or project_id=="Your Project ID"):
+            if prompt:
+                with st.spinner('Running prompt...'):
+                    execution_result = promptExecutor(prompt)
+                display_result(execution_result)
+            else:
+                st.warning('Please enter a prompt before executing.')
 with tab5:
     def fewShotPromptConverter(zero_shot_prompt):
 
@@ -384,6 +389,7 @@ with tab9:
             image.save(location="./gen-img1.png", include_generation_parameters=True)
             st.image("./gen-img1.png",use_column_width="auto")
    
+    
     link="https://cloud.google.com/vertex-ai/docs/generative-ai/image/img-gen-prompt-guide"
     desc="Write your prompt below, See help icon for a prompt guide: (Images will be generated using the Imagen3 model)"
     description = st.text_area(desc,height=200,key=55,placeholder=GENERATE_IMAGES,help=link)
@@ -452,16 +458,18 @@ with tab7:
                 st.markdown("Please enter a prompt.")
 
     help_me=st.checkbox("Help Me Create D.A.R.E Artifacts")
-    if help_me:
-        # st.write('Enter your prompt below and click the button')
-        user_input=st.text_input("Enter your prompt below and click the button:")
-        if st.button(' D.A.R.E Artifacts',disabled=not (project_id)  or project_id=="Your Project ID"):
-            if user_input:
-                    with st.spinner('working on it...'):
-                        dare_artifacts_result = create_dare_artifacts(user_input)
-                    st.text_area('D.A.R.E Artifacts', dare_artifacts_result, height=250, max_chars=None, key=None)
-            else:
-                st.markdown("Please enter a prompt.")    
+    with st.form(key='dareassist',clear_on_submit=False):
+        
+        if help_me:
+            # st.write('Enter your prompt below and click the button')
+            user_input=st.text_input("Enter your prompt below and click the button:")
+            if st.form_submit_button(' D.A.R.E Artifacts',disabled=not (project_id)  or project_id=="Your Project ID"):
+                if user_input:
+                        with st.spinner('working on it...'):
+                            dare_artifacts_result = create_dare_artifacts(user_input)
+                        st.text_area('D.A.R.E Artifacts', dare_artifacts_result, height=250, max_chars=None, key=None)
+                else:
+                    st.markdown("Please enter a prompt.")    
 with tab2:
     
     with st.form(key='metaprompt'):
