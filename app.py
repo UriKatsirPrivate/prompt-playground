@@ -43,7 +43,7 @@ def get_project_id():
             return None
     except requests.RequestException as e:
         print(f"Error: {e}")
-        return "landing-zone-demo-341118"
+        # return "landing-zone-demo-341118"
         return None
 
 project_id=get_project_id()
